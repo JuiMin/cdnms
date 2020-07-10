@@ -16,7 +16,7 @@ services:
         build: ./server
         command: python3 -u /server/main.py
         environment:
-            PORT: ':8283'
+            PORT: '8283'
             REDISPWD: blahpikachublahpotatoq
             TLSCERT: '/etc/letsencrypt/live/cdnms.derekwang.dev/fullchain.pem'
             TLSKEY: '/etc/letsencrypt/live/cdnms.derekwang.dev/privkey.pem'
