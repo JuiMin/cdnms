@@ -8,11 +8,10 @@ import tornado.web
 # cdnms imports
 from lib.handlers import MainHandler, RoomHandler
 
+
 def make_app():
-    return tornado.web.Application([
-        (r"/", MainHandler),
-        (r"/room/([0-9]+)", RoomHandler)
-    ])
+    return tornado.web.Application([(r"/", MainHandler), (r"/room/([0-9]+)", RoomHandler)])
+
 
 if __name__ == "__main__":
     # Get environment variables
