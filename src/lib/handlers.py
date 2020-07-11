@@ -1,19 +1,30 @@
-import tornado.web
+from http import HTTPStatus
 
-from lib.constants import HOSTSERVER
+import tornado.web
+from tornado.escape import json_encode
+
+from lib.constants import API_BASE
 
 class MainHandler(tornado.web.RequestHandler):
     """
     handler for the homepage
     """
     def get(self):
-        data = {"hostserver": HOSTSERVER}
+        data = {"api_base": API_BASE}
         self.render("../templates/home.html", **data)
 
     def post(self):
-        """
-        Post
-        """
+        self.set_header("Content-Type", "application/json")
+
+        # Create Room
+        success = True
+        # Select rsp
+        if success == True:
+            self.set_status(HTTPStatus.CREATED)
+            x = {
+                "room_id": 12312321
+            }
+            self.write(json_encode(x))
 
 
 class RoomHandler(tornado.web.RequestHandler):
@@ -21,11 +32,12 @@ class RoomHandler(tornado.web.RequestHandler):
     Room handler should address creation/teardown of rooms
     """
 
-    def get(self, room_id=None):
+    def get(self, room_id):
         """
         This should get the room state by ID
         """
-        self.write(f"get from room. ID = {room_id}")
+        data = {"api_base": API_BASE, "room": room_id}
+        self.render("../templates/room.html", **data)
 
     def post(self):
         """

@@ -6,6 +6,7 @@ import tornado.ioloop
 import tornado.web
 
 # cdnms imports
+from lib.constants import PORT
 from lib.handlers import MainHandler, RoomHandler
 
 
@@ -15,9 +16,7 @@ def make_app():
 
 
 if __name__ == "__main__":
-    # Get environment variables
-    port = os.getenv("PORT", 443)
     app = make_app()
-    print(f"Starting app on port: {port}")
-    app.listen(port)
+    print(f"Starting app on port: {PORT}")
+    app.listen(PORT)
     tornado.ioloop.IOLoop.current().start()
