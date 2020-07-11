@@ -13,13 +13,14 @@ services:
         depends_on:
             - cdnmsredis
             - cdnmscertbot
-        build: ./server
-        command: python3 -u /server/main.py
+        build: ./src
+        command: python3 -u /cdnms/main.py
         environment:
             PORT: "8283"
+            HOSTSERVER: "${HOSTSERVER}"
             REDISPWD: blahpikachublahpotatoq
-            TLSCERT: "/etc/letsencrypt/live/cdnms.derekwang.dev/fullchain.pem"
-            TLSKEY: "/etc/letsencrypt/live/cdnms.derekwang.dev/privkey.pem"
+            TLSCERT: "/etc/letsencrypt/live/${HOSTSERVER}/fullchain.pem"
+            TLSKEY: "/etc/letsencrypt/live/${HOSTSERVER}/privkey.pem"
         ports:
             - "8283:8283"
         volumes:
@@ -27,7 +28,7 @@ services:
             - certbot-var:/var/lib/letsencrypt
     cdnmscertbot:
         container_name: certbot
-        command: certonly --standalone --email sentientoranges@gmail.com --agree-tos --keep --no-eff-email -d cdnms.derekwang.dev
+        command: certonly --standalone --email sentientoranges@gmail.com --agree-tos --keep --no-eff-email -d ${HOSTSERVER}
         image: certbot/certbot
         networks:
             - cdnms

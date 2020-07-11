@@ -1,9 +1,12 @@
 import tornado.web
 
+from lib.constants import HOSTSERVER
+
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("<h1>Codenames Game</h1>\n" "<div>Whatever</div>")
+        data = {"hostserver": HOSTSERVER}
+        self.render("../templates/home.html", **data)
 
 
 class RoomHandler(tornado.web.RequestHandler):
