@@ -3,9 +3,17 @@ import tornado.web
 from lib.constants import HOSTSERVER
 
 class MainHandler(tornado.web.RequestHandler):
+    """
+    handler for the homepage
+    """
     def get(self):
         data = {"hostserver": HOSTSERVER}
         self.render("../templates/home.html", **data)
+
+    def post(self):
+        """
+        Post
+        """
 
 
 class RoomHandler(tornado.web.RequestHandler):

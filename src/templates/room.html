@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Codenames</title>
+    </head>
+    <body>
+        <script>
+            // createRoom takes a room name and submits a request to create a room
+            function createRoom(name) {
+                console.log(name);
+                console.log("Hello");
+            }
+        </script>
+        <h1>Codenames</h1>
+        <h2>Room: {{ room }}</h2>
+        <div>
+            <label>Room name: </label>
+            <input type="text" id="room_name" />
+            <button
+                onclick="createRoom(document.getElementById('room_name').value)"
+            >
+                Create Room
+            </button>
+        </div>
+    </body>
+</html>
