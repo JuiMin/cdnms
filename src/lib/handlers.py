@@ -2,7 +2,6 @@ import tornado.web
 
 from lib.constants import HOSTSERVER
 
-
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         data = {"hostserver": HOSTSERVER}

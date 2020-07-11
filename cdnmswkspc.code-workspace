@@ -7,6 +7,7 @@
     "settings": {
         "editor.formatOnSave": true,
         "prettier.tabWidth": 4,
+        "python.pythonPath": "./src",
         "python.formatting.provider": "black",
         "python.formatting.blackPath": "black",
         "python.formatting.blackArgs": ["--line-length", "120"]
