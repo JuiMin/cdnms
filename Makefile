@@ -6,3 +6,6 @@ localserver:
 prod:
 	docker context use cdnms
 	docker-compose --env-file ./env_files/prod.env up -d --force-recreate --build cdnmsserver
+
+clean:
+	docker system prune -f
