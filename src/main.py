@@ -10,9 +10,17 @@ from lib.constants import PORT
 from lib.handlers import MainHandler, RoomHandler
 
 
+def generate_tornado_settings():
+    return {
+        "static_path": os.path.join(os.path.dirname(__file__), "js"),
+        "static_url_prefix": "/resources/"
+    }
+
 def make_app():
     routes = [(r"/", MainHandler), (r"/room/([0-9]+)", RoomHandler)]
-    return tornado.web.Application(routes)
+    settings = generate_tornado_settings()
+    print(settings)
+    return tornado.web.Application(routes,**settings)
 
 
 if __name__ == "__main__":

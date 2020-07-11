@@ -4,33 +4,7 @@
     </head>
     <body>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-            // createRoom takes a room name and submits a request to create a room
-            function createRoom(name) {
-                console.log("Attempting to create room for " + name);
-                $.post(
-                    "{{ api_base }}",
-                    {
-                        name: name,
-                    },
-                    function (data, status) {
-                        if (status == "success") {
-                            // On success route to the new room
-                            window.location.replace(
-                                "{{ api_base }}room/" + data.room_id
-                            );
-                        } else if (data.error_message) {
-                            alert(data.error_message);
-                        } else {
-                            console.log(
-                                "Create Room Request Status: " + status
-                            );
-                            console.log(data);
-                        }
-                    }
-                );
-            }
-        </script>
+        <script src="{{ api_base }}resources/home.js"></script>
         <h1>Codenames</h1>
         <div>
             <label>Room name: </label>
