@@ -16,13 +16,13 @@ services:
         build: ./src
         command: python3 -u /cdnms/main.py
         environment:
-            PORT: "8283"
+            PORT: "${CDNMSPORT}"
             HOSTSERVER: "${HOSTSERVER}"
             REDISPWD: blahpikachublahpotatoq
             TLSCERT: "/etc/letsencrypt/live/${HOSTSERVER}/fullchain.pem"
             TLSKEY: "/etc/letsencrypt/live/${HOSTSERVER}/privkey.pem"
         ports:
-            - "8283:8283"
+            - "${CDNMSPORT}:${CDNMSPORT}"
         volumes:
             - certbot-etc:/etc/letsencrypt
             - certbot-var:/var/lib/letsencrypt
@@ -33,7 +33,7 @@ services:
         networks:
             - cdnms
         ports:
-            - 80:80
+            - 8085:8085
         volumes:
             - certbot-etc:/etc/letsencrypt
             - certbot-var:/var/lib/letsencrypt
