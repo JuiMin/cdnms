@@ -1,0 +1,1 @@
+# memstore implements an interface

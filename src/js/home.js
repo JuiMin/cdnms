@@ -13,6 +13,7 @@ function createRoom(name) {
                 // On success route to the new room
                 window.location.href = "room/" + data.room_id;
             } else if (data.error_message) {
+                // Check if we sent back an error message of some kind
                 alert(data.error_message);
             } else {
                 console.log("Create Room Request Status: " + status);

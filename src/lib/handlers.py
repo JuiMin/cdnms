@@ -4,16 +4,21 @@ import tornado.web
 from tornado.escape import json_encode
 
 from lib.constants import API_BASE
+from lib.helpers import load_words
+
+WORDS = load_words()
+
 
 class MainHandler(tornado.web.RequestHandler):
     """
     handler for the homepage
     """
+
     def get(self):
         """
         Serves the homepage
         """
-        data = {"api_base": API_BASE}
+        data = {"api_base": API_BASE, "words": WORDS}
         self.render("../templates/home.html", **data)
 
     def post(self):
@@ -34,9 +39,7 @@ class MainHandler(tornado.web.RequestHandler):
         # Select rsp
         if success == True:
             self.set_status(HTTPStatus.CREATED)
-            x = {
-                "room_id": 12312321
-            }
+            x = {"room_id": 12312321}
             self.write(json_encode(x))
 
 

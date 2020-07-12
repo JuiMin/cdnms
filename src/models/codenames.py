@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Team(Enum):
     RED = 0
     BLUE = 1
@@ -18,7 +19,9 @@ class GameRoom:
         self.red_team = {}
         self.blue_team = {}
         self.creator_id = creator_id
-        self.add_player(creator_team, creator_id, )
+        self.add_player(
+            creator_team, creator_id,
+        )
         self.blue_spymaster = None
         self.red_spymaster = None
 
@@ -31,6 +34,4 @@ class GameRoom:
             if cookie_id in self.red_team:
                 del self.red_team[cookie_id]
             self.blue_team[cookie_id] = player
-
-
 
