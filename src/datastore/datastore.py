@@ -24,3 +24,4 @@ class Datastore:
     def select_card(self, room_id, card_num):
         """
         Selects a card
+        """
