@@ -6,7 +6,11 @@ from tornado.escape import json_encode
 from lib.constants import API_BASE
 from lib.helpers import load_words
 
+from datastore.memstore import Memstore
+
 WORDS = load_words()
+
+STORE = Memstore()
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -18,7 +22,7 @@ class MainHandler(tornado.web.RequestHandler):
         """
         Serves the homepage
         """
-        data = {"api_base": API_BASE, "words": WORDS}
+        data = {"api_base": API_BASE}
         self.render("../templates/home.html", **data)
 
     def post(self):
@@ -30,6 +34,11 @@ class MainHandler(tornado.web.RequestHandler):
         # Create Room
         success = True
 
+        print(self.request.body)
+
+        results = STORE.add_user("some_id", "potat")
+
+        print(results)
         """
         TODO: 
         - Implement room creation. Creates two relations
@@ -39,8 +48,7 @@ class MainHandler(tornado.web.RequestHandler):
         # Select rsp
         if success == True:
             self.set_status(HTTPStatus.CREATED)
-            x = {"room_id": 12312321}
-            self.write(json_encode(x))
+            self.write(json_encode(results))
 
 
 class RoomHandler(tornado.web.RequestHandler):

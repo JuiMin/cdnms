@@ -10,8 +10,9 @@ function createRoom(name) {
         },
         function (data, status) {
             if (status == "success") {
+                console.log(data);
                 // On success route to the new room
-                window.location.href = "room/" + data.room_id;
+                // window.location.href = "room/" + data.room_id;
             } else if (data.error_message) {
                 // Check if we sent back an error message of some kind
                 alert(data.error_message);

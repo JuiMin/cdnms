@@ -6,14 +6,14 @@ class Team(Enum):
     BLUE = 1
 
 
-class Player:
+class Player(dict):
     def __init__(self, name):
         self.name = name
 
 
 # Room logic percolates down
 # Each room should have two teams and those teams should know their players
-class GameRoom:
+class GameRoom(dict):
     def __init__(self, name, creator_id, creator_team=Team.RED):
         self.name = name
         self.red_team = {}
