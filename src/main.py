@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.8
+import argparse
 import os
 
 # external libs
@@ -6,25 +7,35 @@ import tornado.ioloop
 import tornado.web
 
 # cdnms imports
-from lib.constants import PORT
-from lib.handlers import MainHandler, RoomHandler
+import words
+from handlers import RootHandler
 
 
 def generate_tornado_settings():
-    return {
-        "static_path": os.path.join(os.path.dirname(__file__), "js"),
-        "static_url_prefix": "/resources/"
-    }
+    return {}
+
 
 def make_app():
-    routes = [(r"/", MainHandler), (r"/room/([0-9]+)", RoomHandler)]
+    routes = [(r"/", RootHandler)]
     settings = generate_tornado_settings()
-    print(settings)
-    return tornado.web.Application(routes,**settings)
+    return tornado.web.Application(routes, **settings)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.parse_args()
+    # Load env variables
+    # First load ENV Variables
+    HOSTSERVER = os.getenv("HOSTSERVER", "localhost")
+    PORT = os.getenv("PORT", 443)
+    # Load wordbank
+    words.WORDBANK = words.load_words()
+    # Constructed constants
+    _transfer_protocol = "http" if HOSTSERVER == "localhost" else "https"
+    API_BASE = f"{_transfer_protocol}://{HOSTSERVER}:{PORT}/"
+
+    # App start
     app = make_app()
-    print(f"Starting app on port: {PORT}")
+    print(f"Starting cdnms on port: {PORT}")
     app.listen(PORT)
     tornado.ioloop.IOLoop.current().start()
