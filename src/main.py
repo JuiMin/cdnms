@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.8
 import argparse
 import os
+import asyncio
 
 # external libs
 import tornado.ioloop
@@ -22,6 +23,9 @@ def make_app():
 
 
 if __name__ == "__main__":
+    if (os.name == 'nt'):
+        # on Windows, Tornado requires the WindowsSelectorEventLoop - Python 3.8 defaults to a different one
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) 
     parser = argparse.ArgumentParser()
     parser.parse_args()
     # Load env variables
@@ -39,3 +43,4 @@ if __name__ == "__main__":
     print(f"Starting cdnms on port: {PORT}")
     app.listen(PORT)
     tornado.ioloop.IOLoop.current().start()
+    
