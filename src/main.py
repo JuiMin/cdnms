@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os
+import pathlib
 
 
 # external libs
@@ -20,7 +21,11 @@ from handlers import (
 
 
 def generate_tornado_settings():
-    return {}
+    p = pathlib.Path(__file__).resolve().parents[1]
+    return {
+        "template_path": os.path.join(p, "templates"),
+        "static_path": os.path.join(p, "static"),
+    }
 
 
 def make_app():
