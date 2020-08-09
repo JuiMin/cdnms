@@ -8,6 +8,7 @@ import pathlib
 # external libs
 import tornado.ioloop
 import tornado.web
+import tornado.autoreload
 
 # cdnms imports
 import words
@@ -19,12 +20,13 @@ from handlers import (
     PlayerHandler,
 )
 
+PARENT_DIRECTORY_PATH = pathlib.Path(__file__).resolve().parents[1]
+
 
 def generate_tornado_settings():
-    p = pathlib.Path(__file__).resolve().parents[1]
     settingsDict = {
-        "template_path": os.path.join(p, "templates"),
-        "static_path": os.path.join(p, "static"),
+        "template_path": os.path.join(PARENT_DIRECTORY_PATH, "templates"),
+        "static_path": os.path.join(PARENT_DIRECTORY_PATH, "static"),
     }
     HOSTSERVER = os.getenv("HOSTSERVER", "localhost")
     if HOSTSERVER == "localhost":
@@ -60,6 +62,15 @@ if __name__ == "__main__":
     # Constructed constants
     _transfer_protocol = "http" if HOSTSERVER == "localhost" else "https"
     API_BASE = f"{_transfer_protocol}://{HOSTSERVER}:{PORT}/"
+
+    # Add autoreload to bundle.js for client development
+    if HOSTSERVER == "localhost":
+        tornado.autoreload.start()
+        for root, dir, files in os.walk(
+            os.path.join(PARENT_DIRECTORY_PATH, "static/dist")
+        ):
+            for f in files:
+                tornado.autoreload.watch(root + "/" + f)
 
     # App start
     app = make_app()
