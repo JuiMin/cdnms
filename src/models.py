@@ -23,12 +23,13 @@ class Card(object):
 
 
 class Codenames(object):
-    __slots__ = ("cards", "gameover", "first", "second")
+    __slots__ = ("cards", "gameover", "first", "second", "turn")
 
     def __init__(self):
         self.setup()
 
     def setup(self):
+        self.turn = 0
         self.gameover = False
         # Set the first team randomly
         self.first = Team.BLUE
@@ -53,6 +54,44 @@ class Codenames(object):
                 self.cards.append(Card(c, Team.DEATH))
             else:
                 self.cards.append(Card(c, Team.NEUTRAL))
+
+    def current_team(self):
+        """
+        The team whose turn it is
+        """
+        if self.turn % 2 == 0:
+            return self.first
+        return self.second
+
+    def check_winner(self):
+        first = 0
+        second = 0
+
+        for c in self.cards:
+            if c.flipped:
+                if c.association == self.first:
+                    first += 1
+                elif c.association == self.second:
+                    second += 1
+                elif c.association == Team.DEATH:
+                    self.turn += 1
+                    return self.current_team()
+        if first == 9:
+            return self.first
+        elif second == 8:
+            return self.second
+        return None
+
+    def process_turn(self, idx) -> bool:
+        if idx < 0 or idx >= 25:
+            return False
+        c = self.cards[idx]
+        c.flip()
+        winner = self.check_winner()
+        if not winner:
+            self.turn += 1
+        else:
+            self.gameover = True
 
 
 class Team(Enum):

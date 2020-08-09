@@ -134,4 +134,20 @@ class GameHandler(tornado.web.RequestHandler):
 
     def post(self, room_name):
         self.set_status(HTTPStatus.OK)
-        self.write(f"Game Handler post to {room_name}")
+        if room_name not in ROOMS:
+            self.set_status(HTTPStatus.NOT_FOUND)
+            self.write(f"{room_name} Does not exist")
+            return
+        base_rsp = {"game_over": False, "reset": False}
+        room: Room = ROOMS[room_name]
+        req_body = json.loads(self.request.body)
+        action = req_body.get("action")
+        if action == "flip":
+            idx = req_body.get("card_number")
+            room.game_instance.process_turn(idx)
+        if action == "reset":
+            base_rsp["reset"] = True
+        if room.game_instance.gameover:
+            base_rsp["game_over"] = True
+        # TODO: Trigger Websocket to send game state
+        self.write(json.dumps(base_rsp))
