@@ -1,5 +1,5 @@
 # Global holding all the words
-WORDBANK = ()
+WORDBANK = None
 
 
 def load_words():

@@ -4,6 +4,7 @@ Codenames model definitions
 
 from enum import Enum
 import random
+import logging
 from typing import Dict, List
 
 import words
@@ -22,22 +23,44 @@ class Card(object):
 
 
 class Codenames(object):
-    __slots__ = ("cards", "gameover")
+    __slots__ = ("cards", "gameover", "first", "second")
 
     def __init__(self):
         self.setup()
 
     def setup(self):
         self.gameover = False
+        # Set the first team randomly
+        self.first = Team.BLUE
+        self.second = Team.RED
+        if random.sample(range(2), 1) == 1:
+            self.first = Team.RED
+            self.second = Team.RED
+
         # TODO: setup the game state for the round
         # Obtain random words from the wordbank
-        # cards = random.choices(words.WORDBANK, k=25)
-        self.cards = ()
+        card_range = set(range(25))
+        t1_cards = set(random.sample(card_range, 9))
+        t2_cards = set(random.sample(card_range - t1_cards, 8))
+        death = set(random.sample((card_range - t1_cards) - t2_cards, 1))
+        neutral = card_range - death.union(t1_cards, t2_cards)
+        self.cards = []
+        for idx, c in enumerate(random.sample(words.WORDBANK, k=25)):
+            if idx in t1_cards:
+                self.cards.append(Card(c, self.first))
+            elif idx in t2_cards:
+                self.cards.append(Card(c, self.second))
+            elif idx in death:
+                self.cards.append(Card(c, Team.DEATH))
+            else:
+                self.cards.append(Card(c, Team.NEUTRAL))
 
 
 class Team(Enum):
     RED = 1
     BLUE = 0
+    DEATH = 4
+    NEUTRAL = 3
     SPECTATOR = 2
 
 

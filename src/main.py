@@ -47,6 +47,7 @@ if __name__ == "__main__":
     PORT = os.getenv("PORT", 443)
     # Load wordbank
     words.WORDBANK = words.load_words()
+    logging.info(f"Loaded {len(words.WORDBANK)} words into memory.")
     # Constructed constants
     _transfer_protocol = "http" if HOSTSERVER == "localhost" else "https"
     API_BASE = f"{_transfer_protocol}://{HOSTSERVER}:{PORT}/"

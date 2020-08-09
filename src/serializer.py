@@ -16,9 +16,9 @@ class CDNMSEncoder(json.JSONEncoder):
                     o[k] = self.default(obj.__getattribute__(k))
                 except Exception as e:
                     logging.info(str(e))
-                    o[k] = "ERROR"
+                    o[k] = str(e)
             return o
-        elif isinstance(obj, list):
+        elif isinstance(obj, (set, list)):
             return [self.default(a) for a in obj]
         elif isinstance(obj, dict):
             return {k: self.default(v) for k, v in obj.items()}
