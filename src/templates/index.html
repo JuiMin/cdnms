@@ -9,6 +9,9 @@
 
 <body>
     <div id='content'></div>
+    <script>
+        window.baseURL = "{{ full_url }}"; // hacky
+    </script>
     <script src="{{ static_url("dist/bundle.js") }}" type="text/javascript"></script>
 </body>
 
