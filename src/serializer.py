@@ -1,21 +1,21 @@
+from enum import Enum
 import json
 import logging
 
-from models import Room, Card, Codenames, Team
+from models import Room, Card, Codenames
 
-CDNMS_MODELS = (Room, Card, Codenames, Team)
+CDNMS_MODELS = (Room, Card, Codenames)
 
 
 class CDNMSEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, CDNMS_MODELS):
-            logging.info(type(obj))
-            logging.info(dir(obj))
             o = dict()
             for k in obj.__slots__:
                 try:
                     o[k] = self.default(obj.__getattribute__(k))
-                except:
+                except Exception as e:
+                    logging.info(str(e))
                     o[k] = "ERROR"
             return o
         elif isinstance(obj, list):
@@ -24,5 +24,7 @@ class CDNMSEncoder(json.JSONEncoder):
             return {k: self.default(v) for k, v in obj.items()}
         elif isinstance(obj, (str, int)):
             return obj
+        elif isinstance(obj, Enum):
+            return obj.name
         else:
             return str(obj)

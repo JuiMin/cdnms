@@ -38,6 +38,7 @@ class Codenames(object):
 class Team(Enum):
     RED = 1
     BLUE = 0
+    SPECTATOR = 2
 
 
 class Room(object):
