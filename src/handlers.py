@@ -99,9 +99,24 @@ class PlayerHandler(tornado.web.RequestHandler):
         self.write(f"Player added")
 
     def delete(self, room_name):
-        # TODO MAKE THIS PROPERLY
-        self.set_status(HTTPStatus.OK)
-        self.write(f"Player Handler Delete {room_name}")
+        if room_name not in ROOMS:
+            self.set_status(HTTPStatus.NOT_FOUND)
+            self.write(f"{room_name} Does not exist")
+            return
+        room: Room = ROOMS[room_name]
+        req_body = json.loads(self.request.body)
+        name = req_body.get("name")
+        if name and room:
+            try:
+                del room.players[name]
+            except:
+                self.set_status(HTTPStatus.NOT_FOUND)
+                self.write("Failed to delete")
+                return
+            self.set_status(HTTPStatus.NO_CONTENT)
+        else:
+            self.set_status(HTTPStatus.BAD_REQUEST)
+            self.write(f"Player Handler Delete {room_name}")
 
 
 class GameHandler(tornado.web.RequestHandler):
