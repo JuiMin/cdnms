@@ -22,10 +22,14 @@ from handlers import (
 
 def generate_tornado_settings():
     p = pathlib.Path(__file__).resolve().parents[1]
-    return {
+    settingsDict = {
         "template_path": os.path.join(p, "templates"),
         "static_path": os.path.join(p, "static"),
     }
+    HOSTSERVER = os.getenv("HOSTSERVER", "localhost")
+    if HOSTSERVER == "localhost":
+        settingsDict["autoreload"] = True
+    return settingsDict
 
 
 def make_app():
