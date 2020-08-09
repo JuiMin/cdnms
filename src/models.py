@@ -43,7 +43,6 @@ class Codenames(object):
         t1_cards = set(random.sample(card_range, 9))
         t2_cards = set(random.sample(card_range - t1_cards, 8))
         death = set(random.sample((card_range - t1_cards) - t2_cards, 1))
-        neutral = card_range - death.union(t1_cards, t2_cards)
         self.cards = []
         for idx, c in enumerate(random.sample(words.WORDBANK, k=25)):
             if idx in t1_cards:
