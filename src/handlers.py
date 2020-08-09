@@ -21,7 +21,7 @@ class DebugHandler(tornado.web.RequestHandler):
 class RootHandler(tornado.web.RequestHandler):
     def get(self):
         self.set_status(HTTPStatus.OK)
-        self.write(f"Welcome to the cdnms API.")
+        self.render("index.html")
 
 
 class RoomHandler(tornado.web.RequestHandler):
