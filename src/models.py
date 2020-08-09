@@ -9,7 +9,7 @@ from typing import Dict, List
 import words
 
 
-class Card:
+class Card(object):
     __slots__ = ("flipped", "value", "association")
 
     def __init__(self, value, association):
@@ -21,7 +21,7 @@ class Card:
         self.flipped = True
 
 
-class Codenames:
+class Codenames(object):
     __slots__ = ("cards", "gameover")
 
     def __init__(self):
@@ -31,8 +31,8 @@ class Codenames:
         self.gameover = False
         # TODO: setup the game state for the round
         # Obtain random words from the wordbank
-        cards = random.choices(words.WORDBANK, k=25)
-        #
+        # cards = random.choices(words.WORDBANK, k=25)
+        self.cards = ()
 
 
 class Team(Enum):
@@ -40,7 +40,7 @@ class Team(Enum):
     BLUE = 0
 
 
-class Room:
+class Room(object):
     __slots__ = (
         "capacity",
         "game_instance",

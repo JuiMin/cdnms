@@ -10,7 +10,7 @@ import tornado.web
 
 # cdnms imports
 import words
-from handlers import RootHandler
+from handlers import GameHandler, RootHandler, RoomHandler, PlayerHandler
 
 
 def generate_tornado_settings():
@@ -18,7 +18,12 @@ def generate_tornado_settings():
 
 
 def make_app():
-    routes = [(r"/", RootHandler)]
+    routes = [
+        (r"/", RootHandler),
+        (r"/rooms", RoomHandler),
+        (r"/rooms/(\w+)", GameHandler),
+        (r"/rooms/(\w+)/players", PlayerHandler),
+    ]
     settings = generate_tornado_settings()
     return tornado.web.Application(routes, **settings)
 
