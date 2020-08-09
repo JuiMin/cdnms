@@ -29,7 +29,10 @@ class Codenames:
 
     def setup(self):
         self.gameover = False
-        self.cards = random.choices(words.WORDBANK, k=25)
+        # TODO: setup the game state for the round
+        # Obtain random words from the wordbank
+        cards = random.choices(words.WORDBANK, k=25)
+        #
 
 
 class Team(Enum):
@@ -51,3 +54,22 @@ class Room:
         self.game_instance = Codenames()
         # TEAMS
         self.players: Dict[str, Team] = {}
+
+    def add_player(self, name, team) -> bool:
+        if name in self.players:
+            return False
+        self.players[name] = team
+        return True
+
+    def move_player(self, name, team) -> bool:
+        if name not in self.players:
+            return False
+        self.players[name] = team
+        return True
+
+    def delete_player(self, name) -> bool:
+        try:
+            del self.players[name]
+        except Exception:
+            return False
+        return True
