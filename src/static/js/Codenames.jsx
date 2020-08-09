@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export default class Codenames extends React.Component {
     render() {
-        return <Container>Why cant I, hold all these codenames?</Container>;
+        return <Container>Why cant I, hold all these codenames test?</Container>;
     }
 }
 const Container = styled.div(() => {
