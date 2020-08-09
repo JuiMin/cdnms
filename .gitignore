@@ -1,4 +1,4 @@
 __pycache__
 .vscode/
-static/node_modules/
-static/dist/
+src/static/node_modules/
+src/static/dist/

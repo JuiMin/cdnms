@@ -2,8 +2,6 @@
 import asyncio
 import logging
 import os
-import pathlib
-
 
 # external libs
 import tornado.ioloop
@@ -20,13 +18,13 @@ from handlers import (
     PlayerHandler,
 )
 
-PARENT_DIRECTORY_PATH = pathlib.Path(__file__).resolve().parents[1]
+DIRECTORY_PATH = os.path.dirname(__file__)
 
 
 def generate_tornado_settings():
     settingsDict = {
-        "template_path": os.path.join(PARENT_DIRECTORY_PATH, "templates"),
-        "static_path": os.path.join(PARENT_DIRECTORY_PATH, "static"),
+        "template_path": os.path.join(DIRECTORY_PATH, "templates"),
+        "static_path": os.path.join(DIRECTORY_PATH, "static"),
     }
     HOSTSERVER = os.getenv("HOSTSERVER", "localhost")
     if HOSTSERVER == "localhost":
@@ -66,8 +64,8 @@ if __name__ == "__main__":
     # Add autoreload to bundle.js for client development
     if HOSTSERVER == "localhost":
         tornado.autoreload.start()
-        for root, dir, files in os.walk(
-            os.path.join(PARENT_DIRECTORY_PATH, "static/dist")
+        for root, _, files in os.walk(
+            os.path.join(DIRECTORY_PATH, "static/dist")
         ):
             for f in files:
                 tornado.autoreload.watch(root + "/" + f)
