@@ -94,9 +94,14 @@ class PlayerHandler(tornado.web.RequestHandler):
             self.write(str(e))
             return
         room: Room = ROOMS[room_name]
-        room.players[player_mod.name] = player_mod.team
-        self.set_status(HTTPStatus.OK)
-        self.write(f"Player added")
+        if player_mod.name in room.players:
+            success = room.move_player(player_mod.name, player_mod.team)
+        else:
+            success = room.add_player(player_mod.name, player_mod.team)
+        if success:
+            self.set_status(HTTPStatus.OK)
+        else:
+            self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def delete(self, room_name):
         if room_name not in ROOMS:
@@ -107,13 +112,12 @@ class PlayerHandler(tornado.web.RequestHandler):
         req_body = json.loads(self.request.body)
         name = req_body.get("name")
         if name and room:
-            try:
-                del room.players[name]
-            except:
-                self.set_status(HTTPStatus.NOT_FOUND)
-                self.write("Failed to delete")
+            success = room.delete_player(name)
+            if success:
+                self.set_status(HTTPStatus.NO_CONTENT)
                 return
-            self.set_status(HTTPStatus.NO_CONTENT)
+            self.set_status(HTTPStatus.NOT_FOUND)
+            self.write("Failed to delete")
         else:
             self.set_status(HTTPStatus.BAD_REQUEST)
             self.write(f"Player Handler Delete {room_name}")
