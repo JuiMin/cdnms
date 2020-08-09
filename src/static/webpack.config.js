@@ -1,25 +1,31 @@
 const webpack = require('webpack');
 const config = {
-    entry: __dirname + '/js/index.jsx',
+    entry: __dirname + '/src/index.tsx',
     output: {
         path: __dirname + '/dist',
         filename: 'bundle.js',
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.css']
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
     },
     module: {
         rules: [
             {
-                test: /\.jsx?/,
+                test: /\.tsx?/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
-                    options: {
+                    options:
+                    {
                         "presets": [
                             "@babel/preset-env",
-                            "@babel/preset-react"
+                            "@babel/preset-typescript",
+                            "@babel/preset-react",
                         ],
+                        "plugins": [
+                            "@babel/proposal-class-properties",
+                            "@babel/proposal-object-rest-spread"
+                        ]
                     }
                 }
             }
