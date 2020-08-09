@@ -15,13 +15,12 @@ class RootHandler(tornado.web.RequestHandler):
     def get(self):
         self.set_status(HTTPStatus.OK)
         logging.info(ROOMS)
-        self.write(
-            f"Welcome to the cdnms API. {json.dumps(ROOMS, cls=CDNMSEncoder)}"
-        )
+        self.write(f"Welcome to the cdnms API.")
 
 
 class RoomHandler(tornado.web.RequestHandler):
     def get(self):
+        # TODO MAKE THIS PROPERLY
         self.set_status(HTTPStatus.OK)
         self.write(f"Websocket attached")
 
@@ -49,14 +48,17 @@ class RoomHandler(tornado.web.RequestHandler):
 
 class PlayerHandler(tornado.web.RequestHandler):
     def get(self, room_name):
+        # TODO MAKE THIS PROPERLY
         self.set_status(HTTPStatus.OK)
         self.write(f"Player Handler room name get req: {room_name}")
 
     def post(self, room_name):
+        # TODO MAKE THIS PROPERLY
         self.set_status(HTTPStatus.OK)
         self.write(f"Player Handler Post to {room_name}")
 
     def delete(self, room_name):
+        # TODO MAKE THIS PROPERLY
         self.set_status(HTTPStatus.OK)
         self.write(f"Player Handler Delete {room_name}")
 
