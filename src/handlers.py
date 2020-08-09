@@ -97,6 +97,7 @@ class PlayerHandler(tornado.web.RequestHandler):
         if room.capacity == len(room.players.keys()):
             self.set_status(HTTPStatus.NOT_ACCEPTABLE)
             self.write("Room capacity reached")
+            return
         if player_mod.name in room.players:
             success = room.move_player(player_mod.name, player_mod.team)
         else:
