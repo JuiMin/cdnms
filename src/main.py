@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Load env variables
     # First load ENV Variables
     HOSTSERVER = os.getenv("HOSTSERVER", "localhost")
-    PORT = os.getenv("PORT", 443)
+    PORT = os.getenv("PORT", 8283)
     # Load wordbank
     words.WORDBANK = words.load_words()
     logging.info(f"Loaded {len(words.WORDBANK)} words into memory.")
