@@ -3,7 +3,7 @@ build-ui:
 
 start: build-ui
 	# Start local dev env
-	cd ./src && ./main.py
+	./src/main.py
 
 local: build-ui
 	docker context use default
