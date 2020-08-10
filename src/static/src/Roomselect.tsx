@@ -53,7 +53,7 @@ export default class Roomselect extends React.Component<RoomselectProps, Roomsel
         }
     };
 
-    private readonly onCreateRoomSuccess = (response): void => {
+    private readonly onCreateRoomSuccess = (response: any): void => {
         console.log('created room with name', this.state.newRoomName);
         // load room
         this.props.setRoomId(this.state.newRoomName);
@@ -75,7 +75,7 @@ export default class Roomselect extends React.Component<RoomselectProps, Roomsel
         }
     };
 
-    private readonly onJoinRoomSuccess = (response): void => {
+    private readonly onJoinRoomSuccess = (response: any): void => {
         console.log('joined room', this.state.existingRoomName);
         // load room
         this.props.setRoomId(this.state.existingRoomName);

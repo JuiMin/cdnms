@@ -9,7 +9,7 @@ export type Team = 'Spectator' | 'Blue' | 'Red';
 
 export interface CodenamesProps {
     baseURL: string;
-};
+}
 
 export interface CodenamesState {
     roomId: string;

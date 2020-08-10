@@ -67,9 +67,8 @@ export default class Userselect extends React.Component<UserselectProps, Usersel
         }
     };
 
-    private readonly onUserCreate = (response): void => {
-        let team = this.state.team;
-        this.props.setCurrentUser(this.state.currentUser, team);
+    private readonly onUserCreate = (response: any): void => {
+        this.props.setCurrentUser(this.state.currentUser, this.state.team);
     };
 
     private readonly onFailure = (error: Error): void => {
