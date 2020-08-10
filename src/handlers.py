@@ -21,7 +21,11 @@ class DebugHandler(tornado.web.RequestHandler):
 class RootHandler(tornado.web.RequestHandler):
     def get(self):
         self.set_status(HTTPStatus.OK)
-        self.render("index.html", static_url=self.static_url)
+        self.render(
+            "index.html",
+            static_url=self.static_url,
+            full_url=self.request.full_url(),
+        )
 
 
 class RoomHandler(tornado.web.RequestHandler):
