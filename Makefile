@@ -3,7 +3,7 @@ build-ui:
 
 start: build-ui
 	# Start local dev env
-	cd ./src && sudo python3 ./main.py
+	cd ./src && ./main.py
 
 local: build-ui
 	docker context use default
@@ -18,4 +18,5 @@ prod:
 	docker-compose --env-file ./env_files/prod.env up -d --force-recreate --build cdnmsserver
 
 clean:
+	rm -rf ./src/static/dist ./src/static/node_modules
 	docker system prune -f
