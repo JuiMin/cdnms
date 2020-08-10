@@ -2,18 +2,28 @@ import React from 'react';
 
 import { post } from './util/http'
 
-export default class Roomselect extends React.Component {
-    constructor(props) {
+export interface RoomselectProps {
+    baseURL: string;
+    setRoomId: (id: string) => void;
+}
+
+export interface RoomselectState {
+    newRoomName: string;
+    existingRoomName: string;
+}
+
+export default class Roomselect extends React.Component<RoomselectProps, RoomselectState> {
+    constructor(props: RoomselectProps) {
         super(props);
         this.state =
             { newRoomName: '', existingRoomName: '', };
     }
 
-    render() {
+    public render(): React.ReactNode {
         return this.getComponent();
     }
 
-    getComponent = () => {
+    private readonly getComponent = (): React.ReactNode => {
         return (
             <div>
                 <div>
@@ -29,12 +39,13 @@ export default class Roomselect extends React.Component {
     }
 
     // NEW ROOM STUFF
-    handleNewRoomInput = (e) => {
+    private readonly handleNewRoomInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
         e.preventDefault();
-        this.setState({ newRoomName: e.target.value });
+        const target = e.target as HTMLInputElement;
+        this.setState({ newRoomName: target.value });
     }
 
-    createRoom = (e) => {
+    private readonly createRoom = (e: React.MouseEvent<HTMLButtonElement>): void => {
         if (this.state.newRoomName) {
             post(this.props.baseURL + "rooms", undefined, { name: this.state.newRoomName }, this.onCreateRoomSuccess, this.onFailure);
         } else {
@@ -42,19 +53,20 @@ export default class Roomselect extends React.Component {
         }
     };
 
-    onCreateRoomSuccess = (response) => {
+    private readonly onCreateRoomSuccess = (response): void => {
         console.log('created room with name', this.state.newRoomName);
         // load room
         this.props.setRoomId(this.state.newRoomName);
     }
 
     // EXISTING ROOM STUFF
-    handleExistingRoomInput = (e) => {
+    private readonly handleExistingRoomInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
         e.preventDefault();
-        this.setState({ existingRoomName: e.target.value });
+        const target = e.target as HTMLInputElement;
+        this.setState({ existingRoomName: target.value });
     }
 
-    joinRoom = (e) => {
+    private readonly joinRoom = (e: React.MouseEvent<HTMLButtonElement>): void => {
         const { existingRoomName } = this.state;
         if (existingRoomName) {
             post(this.props.baseURL + "rooms/" + existingRoomName, undefined, { 'action': 'test' }, this.onJoinRoomSuccess, this.onFailure);
@@ -63,13 +75,13 @@ export default class Roomselect extends React.Component {
         }
     };
 
-    onJoinRoomSuccess = (response) => {
+    private readonly onJoinRoomSuccess = (response): void => {
         console.log('joined room', this.state.existingRoomName);
         // load room
         this.props.setRoomId(this.state.existingRoomName);
     }
 
-    onFailure = (error) => {
+    private readonly onFailure = (error: Error): void => {
         alert(error + ". Try again.");
     }
 

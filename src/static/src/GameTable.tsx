@@ -1,24 +1,33 @@
 import React from 'react';
-import Teams from './Codenames';
+import { Team } from './Codenames';
 
-import { post } from './util/http'
+export interface GameTableProps {
+    baseURL: string;
+    roomId: string;
+    user: string;
+    team: Team;
+}
 
-export default class GameTable extends React.Component {
-    constructor(props) {
+export interface GameTableState {
+    isLoading: boolean;
+}
+
+export default class GameTable extends React.Component<GameTableProps, GameTableState> {
+    constructor(props: GameTableProps) {
         super(props);
         this.state =
             { isLoading: true };
     }
 
-    render() {
+    public render(): React.ReactNode {
         return this.getComponent();
     }
 
-    componentDidMount = () => {
+    public componentDidMount = (): void => {
         setTimeout(() => this.setState({ isLoading: false }), 5000);
     }
 
-    getComponent = () => {
+    private readonly getComponent = (): React.ReactNode => {
         return this.state.isLoading ? (
             <div>
                 loading card games on motorcycles, please wait...
@@ -26,7 +35,7 @@ export default class GameTable extends React.Component {
         ) : this.getCards();
     }
 
-    getCards = () => {
+    private readonly getCards = (): React.ReactNode => {
         return (
             <div>
                 surprise, IS THIS YOUR CARD?

@@ -5,20 +5,26 @@ import Roomselect from './Roomselect';
 import Userselect from './Userselect';
 import GameTable from './GameTable';
 
-export const Teams = {
-    SPECTATOR: "spectator",
-    BLUE: "blue",
-    RED: "red"
+export type Team = 'Spectator' | 'Blue' | 'Red';
+
+export interface CodenamesProps {
+    baseURL: string;
 };
 
-export default class Codenames extends React.Component {
-    constructor(props) {
+export interface CodenamesState {
+    roomId: string;
+    currentUser: string;
+    currentTeam: Team;
+}
+
+export default class Codenames extends React.Component<CodenamesProps, CodenamesState> {
+    constructor(props: CodenamesProps) {
         super(props);
         this.state =
-            { roomId: '', currentUser: '', currentTeam: Teams.SPECTATOR };
+            { roomId: '', currentUser: '', currentTeam: 'Spectator' };
     }
 
-    render() {
+    public render(): React.ReactNode {
         return (
             <Container>
                 {this.getPage()}
@@ -26,7 +32,7 @@ export default class Codenames extends React.Component {
         );
     }
 
-    getPage = () => {
+    private readonly getPage = (): React.ReactNode => {
         const { roomId, currentUser } = this.state;
         if (!roomId) {
             return <Roomselect baseURL={this.props.baseURL} setRoomId={this.setRoomId} />
@@ -38,7 +44,7 @@ export default class Codenames extends React.Component {
         return this.getGame();
     };
 
-    getGame = () => {
+    private readonly getGame = (): React.ReactNode => {
         const { roomId, currentUser, currentTeam } = this.state;
         return (
             <div>
@@ -55,11 +61,11 @@ export default class Codenames extends React.Component {
         );
     };
 
-    setRoomId = (id) => {
+    private readonly setRoomId = (id: string): void => {
         this.setState({ roomId: id });
     };
 
-    setCurrentUser = (user, team) => {
+    private readonly setCurrentUser = (user: string, team: Team): void => {
         this.setState({ currentUser: user, currentTeam: team });
     };
 

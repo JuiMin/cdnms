@@ -1,46 +1,60 @@
 import React from 'react';
-import { Teams } from './Codenames';
+import { Team } from './Codenames';
 
 import { post } from './util/http'
 
-export default class Userselect extends React.Component {
-    constructor(props) {
+export interface UserselectProps {
+    baseURL: string;
+    roomId: string;
+    setCurrentUser: (user: string, team: Team) => void;
+}
+
+export interface UserselectState {
+    currentUser: string;
+    team: Team;
+}
+
+export default class Userselect extends React.Component<UserselectProps, UserselectState> {
+    constructor(props: UserselectProps) {
         super(props);
         this.state =
-            { currentUser: '', team: Teams.SPECTATOR };
+            { currentUser: '', team: 'Spectator' };
     }
 
-    render() {
+    public render(): React.ReactNode {
         return this.getComponent();
     }
 
-    getComponent = () => {
+    private readonly getComponent = (): React.ReactNode => {
         return (
             <div>
                 <label htmlFor="username">Enter a username:</label>
                 <input id="username" placeholder="username" onChange={this.handleUserInput}></input>
                 <label htmlFor="team">Pick a team:</label>
                 <select id="team" onChange={this.handleDropdown}>
-                    <option value={Teams.SPECTATOR}>Spectator</option>
-                    <option value={Teams.RED}>Red</option>
-                    <option value={Teams.BLUE}>Blue</option>
+                    <option value={'Spectator'}>Spectator</option>
+                    <option value={'Red'}>Red</option>
+                    <option value={'Blue'}>Blue</option>
                 </select>
                 <button onClick={this.createUser}>Submit</button>
             </div>
         )
     }
 
-    handleUserInput = (e) => {
+    private readonly handleUserInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
         e.preventDefault();
-        this.setState({ currentUser: e.target.value });
+        const target = e.target as HTMLInputElement;
+        this.setState({ currentUser: target.value });
     }
 
-    handleDropdown = (e) => {
+    private readonly handleDropdown = (e: React.ChangeEvent<HTMLSelectElement>): void => {
         e.preventDefault();
-        this.setState({ team: e.target.value });
+        const target = e.target as HTMLSelectElement;
+        // we set the values, so we know they are of type Team but feels dirty
+        this.setState({ team: target.value as Team });
     }
 
-    createUser = (e) => {
+    private readonly createUser = (e: React.MouseEvent<HTMLButtonElement>): void => {
         const { baseURL, roomId } = this.props;
         const requestBody = {
             name: this.state.currentUser,
@@ -53,12 +67,12 @@ export default class Userselect extends React.Component {
         }
     };
 
-    onUserCreate = (response) => {
+    private readonly onUserCreate = (response): void => {
         let team = this.state.team;
         this.props.setCurrentUser(this.state.currentUser, team);
     };
 
-    onFailure = (error) => {
+    private readonly onFailure = (error: Error): void => {
         alert(error + ". Try again.");
     }
 
