@@ -3,6 +3,7 @@ import json
 import logging
 
 import tornado.web
+import tornado.websocket
 
 from serializer import CDNMSEncoder
 from models import Room, Team
@@ -151,3 +152,14 @@ class GameHandler(tornado.web.RequestHandler):
             base_rsp["game_over"] = True
         # TODO: Trigger Websocket to send game state
         self.write(json.dumps(base_rsp))
+
+
+class SocketHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        pass
+
+    def on_message(self, message):
+        pass
+
+    def on_close(self):
+        pass

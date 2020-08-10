@@ -16,6 +16,7 @@ from handlers import (
     RootHandler,
     RoomHandler,
     PlayerHandler,
+    SocketHandler,
 )
 
 DIRECTORY_PATH = os.path.dirname(__file__)
@@ -49,6 +50,7 @@ def make_app():
         (r"/rooms", RoomHandler),
         (r"/rooms/(\w+)", GameHandler),
         (r"/rooms/(\w+)/players", PlayerHandler),
+        (r"/websocket", SocketHandler)
     ]
     settings = generate_tornado_settings()
     return tornado.web.Application(routes, **settings)
