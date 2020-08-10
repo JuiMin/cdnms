@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 import { post } from './util/http'
@@ -11,11 +10,7 @@ export default class Roomselect extends React.Component {
     }
 
     render() {
-        return (
-            <>
-                {this.getComponent()}
-            </>
-        );
+        return this.getComponent();
     }
 
     getComponent = () => {
