@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --env.NODE_ENV=development --progress -d --config webpack.config.js --watch",
     "check": "tsc",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "pretty": "prettier --write . "
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,8 @@
     "@typescript-eslint/parser": "^3.8.0",
     "babel-loader": "^8.1.0",
     "eslint": "^7.6.0",
+    "eslint-config-prettier": "^6.11.0",
+    "prettier": "2.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "typescript": "^3.9.7",
