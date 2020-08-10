@@ -54,10 +54,6 @@ class RoomHandler(tornado.web.RequestHandler):
 
 
 class PlayerHandler(tornado.web.RequestHandler):
-    def get(self, room_name):
-        self.set_status(HTTPStatus.OK)
-        self.write(f"Player Handler GET to {room_name}")
-
     def post(self, room_name):
         class PlayerMod:
             def __init__(self, body):
