@@ -1,5 +1,5 @@
 import React from 'react';
-import Teams from './Codenames';
+import { Teams } from './Codenames';
 
 import { post } from './util/http'
 
@@ -20,7 +20,7 @@ export default class Userselect extends React.Component {
                 <label htmlFor="username">Enter a username:</label>
                 <input id="username" placeholder="username" onChange={this.handleUserInput}></input>
                 <label htmlFor="team">Pick a team:</label>
-                <select name="team" onChange={this.handleDropdown}>
+                <select id="team" onChange={this.handleDropdown}>
                     <option value={Teams.SPECTATOR}>Spectator</option>
                     <option value={Teams.RED}>Red</option>
                     <option value={Teams.BLUE}>Blue</option>
@@ -46,17 +46,16 @@ export default class Userselect extends React.Component {
             name: this.state.currentUser,
             team: this.state.team
         };
-        if (this.state.currentUser) {
+        if (this.state.currentUser && this.state.team) {
             post(baseURL + 'rooms/' + roomId + '/' + 'players', undefined, requestBody, this.onUserCreate, this.onFailure);
         } else {
-            alert('please enter a username');
+            alert('please enter a username and team');
         }
     };
 
     onUserCreate = (response) => {
-        console.log(this.state.currentUser);
-        console.log(this.state.team);
-        this.props.setCurrentUser(this.state.currentUser, this.state.team);
+        let team = this.state.team;
+        this.props.setCurrentUser(this.state.currentUser, team);
     };
 
     onFailure = (error) => {

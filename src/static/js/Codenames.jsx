@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Roomselect from './Roomselect';
 import Userselect from './Userselect';
+import GameTable from './GameTable';
 
 export const Teams = {
     SPECTATOR: "spectator",
@@ -20,27 +21,38 @@ export default class Codenames extends React.Component {
     render() {
         return (
             <Container>
-                {this.getGame()}
+                {this.getPage()}
             </Container>
         );
     }
 
-    getGame = () => {
-        const { roomId, currentUser, currentTeam } = this.state;
+    getPage = () => {
+        const { roomId, currentUser } = this.state;
         if (!roomId) {
             return <Roomselect baseURL={this.props.baseURL} setRoomId={this.setRoomId} />
         }
         if (!currentUser) {
             // return <user/team select>
-            return <Userselect baseURL={this.props.baseURL} roomId={this.state.roomId} setCurrentUser={this.setCurrentUser} />
+            return <Userselect baseURL={this.props.baseURL} roomId={roomId} setCurrentUser={this.setCurrentUser} />
         }
+        return this.getGame();
+    };
+
+    getGame = () => {
+        const { roomId, currentUser, currentTeam } = this.state;
         return (
             <div>
                 <div>roomId = {roomId}</div>
                 <div>user = {currentUser}</div>
                 <div>team = {currentTeam}</div>
+                <GameTable
+                    baseURL={this.props.baseURL}
+                    roomId={roomId}
+                    user={currentUser}
+                    team={currentTeam}
+                />
             </div>
-        )
+        );
     };
 
     setRoomId = (id) => {

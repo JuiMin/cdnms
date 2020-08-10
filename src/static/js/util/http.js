@@ -47,5 +47,5 @@ function isFunction(functionToCheck) {
 }
 
 function isObject(objectToCheck) {
-    !isFunction(objectToCheck) && typeof objectToCheck === 'object' && objectToCheck !== null
+    return !isFunction(objectToCheck) && typeof objectToCheck === 'object' && objectToCheck !== null;
 }
