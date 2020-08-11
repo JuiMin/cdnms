@@ -1,7 +1,3 @@
-"""
-Codenames model definitions
-"""
-
 from enum import Enum
 import random
 import logging

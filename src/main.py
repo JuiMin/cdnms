@@ -16,6 +16,7 @@ from handlers import (
     RootHandler,
     RoomHandler,
     PlayerHandler,
+    SocketHandler,
 )
 
 DIRECTORY_PATH = os.path.dirname(__file__)
@@ -32,6 +33,16 @@ def generate_tornado_settings():
     return settingsDict
 
 
+def preflight_operations():
+    # ENABLE WINDOWS COMPATABILITY
+    if os.name == "nt":
+        # on Windows, Tornado requires the WindowsSelectorEventLoop - Python 3.8 defaults to a different one
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+    # SETUP LOG LEVEL
+    logging.basicConfig(level=logging.DEBUG)
+
+
 def make_app():
     routes = [
         (r"/", RootHandler),
@@ -39,27 +50,22 @@ def make_app():
         (r"/rooms", RoomHandler),
         (r"/rooms/(\w+)", GameHandler),
         (r"/rooms/(\w+)/players", PlayerHandler),
+        (r"/websocket", SocketHandler)
     ]
     settings = generate_tornado_settings()
     return tornado.web.Application(routes, **settings)
 
 
 if __name__ == "__main__":
-    if os.name == "nt":
-        # on Windows, Tornado requires the WindowsSelectorEventLoop - Python 3.8 defaults to a different one
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    # Setup logging
-    logging.basicConfig(level=logging.DEBUG)
-    # Load env variables
-    # First load ENV Variables
+    preflight_operations()
+
+    # LOAD ENVIRONMENT VARIABLES
     HOSTSERVER = os.getenv("HOSTSERVER", "localhost")
     PORT = os.getenv("PORT", 8283)
+
     # Load wordbank
     words.WORDBANK = words.load_words()
     logging.info(f"Loaded {len(words.WORDBANK)} words into memory.")
-    # Constructed constants
-    _transfer_protocol = "http" if HOSTSERVER == "localhost" else "https"
-    API_BASE = f"{_transfer_protocol}://{HOSTSERVER}:{PORT}/"
 
     # Add autoreload to bundle.js for client development
     if HOSTSERVER == "localhost":
