@@ -155,11 +155,20 @@ class GameHandler(tornado.web.RequestHandler):
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
+
     def open(self):
         logging.info("socket opened")
 
     def on_message(self, message):
-        pass
+        message_body = None
+        try:
+            message_body = json.loads(message)
+        except:
+            logging.info(f"invalid action: {message}", exc_info=True)
+        if not message_body:
+            self.write_message(f"{message} is not an action")
+            return
 
+        
     def on_close(self):
         logging.info("socket closed")
