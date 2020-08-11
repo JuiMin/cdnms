@@ -156,10 +156,10 @@ class GameHandler(tornado.web.RequestHandler):
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        pass
+        logging.info("socket opened")
 
     def on_message(self, message):
         pass
 
     def on_close(self):
-        pass
+        logging.info("socket closed")
