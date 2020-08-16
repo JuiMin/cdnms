@@ -131,3 +131,13 @@ class Room(object):
         except Exception:
             return False
         return True
+
+    def make_turn(self, idx) -> bool:
+        try:
+            self.game_instance.process_turn(idx)
+            return True
+        except Exception:
+            return False
+
+    def reset_game(self):
+        self.game_instance.setup()

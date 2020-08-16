@@ -2,14 +2,19 @@ from enum import Enum
 import json
 import logging
 
+from datastore import StorageResponse
 from models import Room, Card, Codenames
+from handler_util import CDNMSCommand, CDNMSCommandResult, CDNMSResponse
 
-CDNMS_MODELS = (Room, Card, Codenames)
+datastore_objs = (StorageResponse,)
+cdnms_model_objs = (Room, Card, Codenames)
+handler_objs = (CDNMSResponse, CDNMSCommand, CDNMSCommandResult)
+builtin_objs = datastore_objs + cdnms_model_objs + handler_objs
 
 
 class CDNMSEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, CDNMS_MODELS):
+        if isinstance(obj, builtin_objs):
             o = dict()
             for k in obj.__slots__:
                 try:
@@ -26,5 +31,7 @@ class CDNMSEncoder(json.JSONEncoder):
             return obj
         elif isinstance(obj, Enum):
             return obj.name
+        elif obj == None:
+            return None
         else:
             return str(obj)

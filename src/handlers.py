@@ -1,24 +1,108 @@
+"""
+handlers.py defines handler wrapping implementations to ease endpoint devs.
+"""
 from http import HTTPStatus
+from inspect import signature
 import json
 import logging
+from typing import Any, Callable, Dict, Optional
 
 import tornado.web
 import tornado.websocket
 
+from debug_endpoints import DEBUG_ENDPOINT_MAPPING
+from endpoints import ENDPOINT_MAPPING
+from handler_util import CDNMSCommand, CDNMSCommandResult, CDNMSResponse
 from serializer import CDNMSEncoder
-from models import Room, Team
-import words
-
-ROOMS = dict()
 
 
-class DebugHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.set_status(HTTPStatus.OK)
+# Dyanmic Handlers
+class CDNMSRequestHandler(tornado.web.RequestHandler):
+    def initialize(self, endpoints: Dict):
+        self.get_method = endpoints.get("GET", None)
+        self.post_method = endpoints.get("POST", None)
+        get_query_params = []
+        if self.get_method:
+            get_query_params = signature(self.get_method).parameters
+        self.get_allowed_qargs = get_query_params
+
+    def get(self, *args, **kwargs):
+        if not self.get_method:
+            return super().get()
         self.set_header("Content-Type", "application/json")
-        self.write(json.dumps(ROOMS, cls=CDNMSEncoder))
+        if self.request.query_arguments:
+            for query_arg in self.get_allowed_qargs:
+                value = self.get_query_argument(query_arg, None)
+                if value:
+                    kwargs[query_arg] = str(value)
+        try:
+            logging.info(kwargs)
+            resp: CDNMSResponse = self.get_method(*args, **kwargs)
+            self.set_status(resp.status)
+            self.write(json.dumps(resp.body, cls=CDNMSEncoder))
+        except TypeError as e:
+            self.write_error(
+                HTTPStatus.BAD_REQUEST.value, exc_info=str(e),
+            )
+        except Exception as e:
+            self.write_error(
+                HTTPStatus.INTERNAL_SERVER_ERROR.value, exc_info=str(e),
+            )
+
+    def post(self, *args, **kwargs):
+        if not self.post_method:
+            return super().post()
+        if self.request.body:
+            try:
+                body = json.loads(self.request.body)
+                kwargs.update({k: str(v) for k, v in body.items()})
+            except Exception as e:
+                self.write_error(
+                    HTTPStatus.BAD_REQUEST.value, exc_info=str(e),
+                )
+                return
+        try:
+            resp: CDNMSResponse = self.post_method(*args, kwargs)
+            self.set_status(resp.status)
+            self.write(json.dumps(resp.body, cls=CDNMSEncoder))
+        except TypeError as e:
+            self.write_error(
+                HTTPStatus.BAD_REQUEST.value, exc_info=str(e),
+            )
+        except Exception as e:
+            self.write_error(
+                HTTPStatus.INTERNAL_SERVER_ERROR.value, exc_info=str(e),
+            )
 
 
+class CDNMSWebsocketHandler(tornado.websocket.WebSocketHandler):
+    def initialize(self, endpoints: Dict):
+        self.default_method = endpoints.get("DEFAULT", None)
+
+    def open(self):
+        logging.info("Opening Socket Connection.")
+
+    def close(self, room_id):
+        logging.info("Closing socket Connection.")
+
+    def on_message(self, message):
+        if not message:
+            self.write_error(HTTPStatus.BAD_REQUEST.value)
+        command = None
+        try:
+            command = CDNMSCommand(json.loads(message))
+        except Exception as e:
+            logging.error(str(e), exc_info=True)
+            self.write_message(str(e))
+        if command:
+            res: CDNMSCommandResult = self.default_method(command, self)
+        else:
+            res = CDNMSCommandResult(False, {})
+        if not res.success:
+            self.write_message(json.dumps(res, cls=CDNMSEncoder))
+
+
+# Manual Route Handlers
 class RootHandler(tornado.web.RequestHandler):
     def get(self):
         self.set_status(HTTPStatus.OK)
@@ -29,146 +113,24 @@ class RootHandler(tornado.web.RequestHandler):
         )
 
 
-class RoomHandler(tornado.web.RequestHandler):
-    def get(self):
-        # TODO MAKE THIS PROPERLY
-        self.set_status(HTTPStatus.OK)
-        self.write(f"Websocket attached")
+# Default with the builtin handlers
+cdnms_routes = [(r"/", RootHandler)]
 
-    def post(self):
-        # TODO: write code for creating a room
-        self.set_status(HTTPStatus.OK)
-        req_body = json.loads(self.request.body)
+# Possible handlers
+HANDLER_MAPPING = {
+    "response": CDNMSRequestHandler,
+    "websocket": CDNMSWebsocketHandler,
+}
+
+# Construct route mapping to be expanded in tornado
+used_mappings = (ENDPOINT_MAPPING, DEBUG_ENDPOINT_MAPPING)
+for mapping in used_mappings:
+    for handler_type in mapping:
         try:
-            name = req_body.get("name")
-            if name in ROOMS:
-                self.set_status(HTTPStatus.CONFLICT)
-                self.write("Room already exists")
-                return
-            ROOMS[name] = Room(name)
-            self.set_status(HTTPStatus.CREATED)
-            self.write(f"Creating room {name}")
+            handler_class = HANDLER_MAPPING[handler_type]
+            for target, endpoints in mapping[handler_type].items():
+                cdnms_routes.append(
+                    (target, handler_class, dict(endpoints=endpoints))
+                )
         except Exception as e:
-            logging.info(str(e), exc_info=True)
-            self.set_status(HTTPStatus.BAD_REQUEST)
-            self.write("Error creating room")
-
-
-class PlayerHandler(tornado.web.RequestHandler):
-    def post(self, room_name):
-        class PlayerMod:
-            def __init__(self, body):
-                self.name = str(body.get("name"))
-                team = body.get("team")
-                if isinstance(team, int):
-                    if team == 0:
-                        team = Team.BLUE
-                    elif team == 1:
-                        team = Team.RED
-                    else:
-                        team = Team.SPECTATOR
-                elif isinstance(team, str):
-                    team = team.lower()
-                    if team == "blue":
-                        team = Team.BLUE
-                    elif team == "red":
-                        team = Team.RED
-                    else:
-                        team = Team.SPECTATOR
-                else:
-                    team = Team.SPECTATOR
-                self.team = team
-
-        if room_name not in ROOMS:
-            self.set_status(HTTPStatus.BAD_REQUEST)
-            self.write(f"{room_name} Does not exist")
-            return
-        player_mod = None
-        try:
-            player_mod = json.loads(self.request.body, object_hook=PlayerMod)
-        except KeyError as e:
-            self.set_status(HTTPStatus.BAD_REQUEST)
-            self.write(f"Request body incorrect format: {str(e)}")
-            return
-        except Exception:
-            self.set_status(HTTPStatus.BAD_REQUEST)
-            self.write(str(e))
-            return
-        room: Room = ROOMS[room_name]
-        if room.capacity == len(room.players.keys()):
-            self.set_status(HTTPStatus.NOT_ACCEPTABLE)
-            self.write("Room capacity reached")
-            return
-        if player_mod.name in room.players:
-            success = room.move_player(player_mod.name, player_mod.team)
-        else:
-            success = room.add_player(player_mod.name, player_mod.team)
-        if success:
-            self.set_status(HTTPStatus.OK)
-        else:
-            self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
-
-    def delete(self, room_name):
-        if room_name not in ROOMS:
-            self.set_status(HTTPStatus.NOT_FOUND)
-            self.write(f"{room_name} Does not exist")
-            return
-        room: Room = ROOMS[room_name]
-        req_body = json.loads(self.request.body)
-        name = req_body.get("name")
-        if name and room:
-            success = room.delete_player(name)
-            if success:
-                self.set_status(HTTPStatus.NO_CONTENT)
-                return
-            self.set_status(HTTPStatus.NOT_FOUND)
-            self.write("Failed to delete")
-        else:
-            self.set_status(HTTPStatus.BAD_REQUEST)
-            self.write(f"Player Handler Delete {room_name}")
-
-
-class GameHandler(tornado.web.RequestHandler):
-    def get(self, room_name):
-        self.set_status(HTTPStatus.OK)
-        self.write(f"Game Handler get to {room_name}")
-
-    def post(self, room_name):
-        self.set_status(HTTPStatus.OK)
-        if room_name not in ROOMS:
-            self.set_status(HTTPStatus.NOT_FOUND)
-            self.write(f"{room_name} Does not exist")
-            return
-        base_rsp = {"game_over": False, "reset": False}
-        room: Room = ROOMS[room_name]
-        req_body = json.loads(self.request.body)
-        action = req_body.get("action")
-        if action == "flip":
-            idx = req_body.get("card_number")
-            room.game_instance.process_turn(idx)
-        if action == "reset":
-            base_rsp["reset"] = True
-        if room.game_instance.gameover:
-            base_rsp["game_over"] = True
-        # TODO: Trigger Websocket to send game state
-        self.write(json.dumps(base_rsp))
-
-
-class SocketHandler(tornado.websocket.WebSocketHandler):
-
-    def open(self):
-        logging.info("socket opened")
-
-    def on_message(self, message):
-        message_body = None
-        try:
-            message_body = json.loads(message)
-        except:
-            logging.info(f"invalid action: {message}", exc_info=True)
-        if not message_body:
-            self.write_message(f"{message} is not an action")
-            return
-
-        
-    def on_close(self):
-        logging.info("socket closed")
+            logging.error(str(e), exc_info=True)
