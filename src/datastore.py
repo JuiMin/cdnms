@@ -28,14 +28,17 @@ class GameStorage:
     """
 
     def __init__(self):
-        self._internal_storage: Dict[uuid.UUID, Room] = dict()
+        self._internal_storage: Dict[str, Room] = dict()
 
     def create_room(self, room_name: str) -> StorageResponse:
+        if not room_name:
+            return StorageResponse(False)
         room_id = uuid.uuid4().hex
         while room_id in self._internal_storage:
             room_id = uuid.uuid4().hex
         try:
-            self._internal_storage[room_id] = Room(room_name)
+            room = Room(room_name)
+            self._internal_storage[room_id] = room
             return StorageResponse(data={"room_id": str(room_id)})
         except Exception as e:
             logging.error(str(e), exc_info=True)
