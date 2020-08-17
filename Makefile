@@ -1,6 +1,11 @@
 build-ui:
 	cd ./src/static && npm install && npm run build
 
+py-test:
+	cd ./src && pytest
+
+test: py-test
+
 start: build-ui
 	# Start local dev env
 	cd ./src && ./main.py
