@@ -141,7 +141,9 @@ def default_ws(command: CDNMSCommand, handler) -> CDNMSCommandResult:
 
 
 ENDPOINT_MAPPING = {
-    "response": {r"/rooms": {"GET": get_specific_room, "POST": post_rooms},},
-    "websocket": {r"/ws": {"DEFAULT": default_ws,}},
+    "response": {
+        r"/api/rooms": {"GET": get_specific_room, "POST": post_rooms},
+    },
+    "websocket": {r"/api/ws": {"DEFAULT": default_ws,}},
 }
 
